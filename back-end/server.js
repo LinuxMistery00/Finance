@@ -1,8 +1,7 @@
-// back-end/server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
-const cors = require('cors'); // Certifique-se de ter instalado o pacote 'cors'.
+const cors = require('cors');
 const app = express();
 const port = 3001;
 
@@ -38,12 +37,12 @@ app.get('/devs', async (req, res) => {
 });
 
 app.post('/addDev', async (req, res) => {
-  const { nome } = req.body;
+  const { nome, date, description } = req.body;
 
   try {
     const db = await connectToDatabase();
     const financesCollection = db.collection('finances');
-    const dev = { nome };
+    const dev = { nome, date, description };
 
     const result = await financesCollection.insertOne(dev);
 
