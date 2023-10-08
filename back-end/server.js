@@ -37,12 +37,12 @@ app.get('/devs', async (req, res) => {
 });
 
 app.post('/addDev', async (req, res) => {
-  const { nome, date, description } = req.body;
+  const { nome, date, description, value } = req.body;
 
   try {
     const db = await connectToDatabase();
     const financesCollection = db.collection('finances');
-    const dev = { nome, date, description };
+    const dev = { nome, date, description, value };
 
     const result = await financesCollection.insertOne(dev);
 

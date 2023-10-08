@@ -1,0 +1,10 @@
+.Scrollbar {
+    background-color: rgba(39, 225, 122, 1);
+    width: auto;
+    height: 15vh;
+}
+
+.Title {
+    text-align: center;
+    font-size: 8vh;
+}
