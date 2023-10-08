@@ -1,51 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import axios, { AxiosResponse } from 'axios';
 
-function App() {
-  const [name, setName] = useState("");
-  const [message, setMessage] = useState("");
+interface finance {
+  _id: string;
+  nome: string;
+}
 
-  const handleNameChange = (e) => {
-    setName(e.target.value);
+const App: React.FC = () => {
+  const [nome, setNome] = useState('');
+  const [finances, setfinances] = useState<finance[]>([]);
+
+  useEffect(() => {
+    axios.get<finance[]>('http://localhost:3001/devs').then((response: AxiosResponse<finance[]>) => {
+      setfinances(response.data);
+    });
+  }, []);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setNome(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("/addDev", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name }),
+  const handleSubmit = () => {
+    axios
+      .post<finance>('http://localhost:3001/addDev', { nome })
+      .then((response: AxiosResponse<finance>) => {
+        setfinances([...finances, response.data]);
+        setNome('');
+      })
+      .catch((error) => {
+        console.error("Erro na solicitação POST:", error);
       });
-
-      if (response.ok) {
-        setMessage("Pessoa inserida com sucesso!");
-      } else {
-        setMessage("Erro ao inserir pessoa.");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar solicitação:", error);
-      setMessage("Erro ao inserir pessoa.");
-    }
   };
+  
 
   return (
-    <div className="App">
-      <h1>Inserir Pessoa</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={name}
-          onChange={handleNameChange}
-        />
-        <button type="submit">Adicionar Pessoa</button>
-      </form>
-      <p>{message}</p>
+    <div>
+      <h1>Lista de finances</h1>
+      <div>
+        <input type="text" placeholder="Nome" value={nome} onChange={handleInputChange} />
+        <button onClick={handleSubmit}>Adicionar</button>
+      </div>
+      <ul>
+        {finances.map((finance: finance) => (
+          <li key={finance._id}>{finance.nome}</li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default App;
